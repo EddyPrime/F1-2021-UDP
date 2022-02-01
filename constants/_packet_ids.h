@@ -1,0 +1,12 @@
+#define MOTION 0
+#define SESSION 1
+#define LAP_DATA 2
+#define EVENT 3
+#define PARTICIPANTS 4
+#define CAR_SETUPS 5
+#define CAR_TELEMETRY 6
+#define CAR_STATUS 7
+#define FINAL_CLASSIFICATION 8
+#define LOBBY_INFO 9
+#define CAR_DAMAGE 10
+#define SESSION_HISTORY 11

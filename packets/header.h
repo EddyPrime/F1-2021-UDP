@@ -1,14 +1,26 @@
+#include <stdint.h>
+
+typedef int8_t int8;
+typedef int16_t int16;
+typedef int32_t int32;
+typedef int64_t int64;
+
+typedef uint8_t uint8;
+typedef uint16_t uint16;
+typedef uint32_t uint32;
+typedef uint64_t uint64;
+
 struct PacketHeader
 {
-    uint16    m_packetFormat;            // 2021
-    uint8     m_gameMajorVersion;        // Game major version - "X.00"
-    uint8     m_gameMinorVersion;        // Game minor version - "1.XX"
-    uint8     m_packetVersion;           // Version of this packet type, all start from 1
-    uint8     m_packetId;                // Identifier for the packet type, see below
-    uint64    m_sessionUID;              // Unique identifier for the session
-    float     m_sessionTime;             // Session timestamp
-    uint32    m_frameIdentifier;         // Identifier for the frame the data was retrieved on
-    uint8     m_playerCarIndex;          // Index of player's car in the array
-    uint8     m_secondaryPlayerCarIndex; // Index of secondary player's car in the array (splitscreen)
-                                         // 255 if no second player
+    uint16 m_packetFormat;           // 2021
+    uint8 m_gameMajorVersion;        // Game major version - "X.00"
+    uint8 m_gameMinorVersion;        // Game minor version - "1.XX"
+    uint8 m_packetVersion;           // Version of this packet type, all start from 1
+    uint8 m_packetId;                // Identifier for the packet type, see below
+    uint64 m_sessionUID;             // Unique identifier for the session
+    float m_sessionTime;             // Session timestamp
+    uint32 m_frameIdentifier;        // Identifier for the frame the data was retrieved on
+    uint8 m_playerCarIndex;          // Index of player's car in the array
+    uint8 m_secondaryPlayerCarIndex; // Index of secondary player's car in the array (splitscreen)
+                                     // 255 if no second player
 };

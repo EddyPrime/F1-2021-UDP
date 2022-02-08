@@ -3,7 +3,7 @@
 #define LAP_DATA 2
 #define EVENT 3
 #define PARTICIPANTS 4
-#define CAR_SETUPS 5
+#define CAR_SETUP 5
 #define CAR_TELEMETRY 6
 #define CAR_STATUS 7
 #define FINAL_CLASSIFICATION 8

@@ -8,55 +8,107 @@
 
 #include "app.h"
 
-int main(int argc, char **argv)
+int main()
 {
+    int sock;
+    int addr_len;
     ssize_t res;
+    struct sockaddr_in server_addr, client_addr;
+
+    char buf[1472];
     struct PacketHeader packetHeader;
-    int sockfd;
-    unsigned servaddrlen;
-    struct sockaddr_in servaddr;
 
-    servaddr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
-    servaddr.sin_port = htons(PORT);
-    servaddr.sin_family = AF_INET;
-    servaddrlen = sizeof(servaddr);
-
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sockfd < 0)
+    if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
         perror("socket()");
         exit(1);
     }
-    printf("opened socket with fd %d\n", sockfd);
 
-    if (connect(sockfd, (struct sockaddr *)&servaddr, servaddrlen) < 0)
-    {
-        perror("connect()");
-        exit(1);
-    }
-    printf("connected to server\n");
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(PORT);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    // bzero(&(server_addr.sin_zero),8);
 
-    if (0 && bind(sockfd, (struct sockaddr *)&servaddr, servaddrlen) < 0)
+    if (bind(sock, (struct sockaddr *)&server_addr,
+             sizeof(struct sockaddr)) == -1)
     {
         perror("bind()");
         exit(1);
     }
-    printf("binded\n");
 
-    char buf[2000];
+    addr_len = sizeof(struct sockaddr);
+
+    printf("server waiting on port %d\n", PORT);
+    fflush(stdout);
 
     while (1)
     {
-        printf("trying to receive\n");
-        res = recvfrom(sockfd, &packetHeader, sizeof(struct PacketHeader), 0, (struct sockaddr *)&servaddr, &servaddrlen);
-        if (res < 0)
+
+        res = recvfrom(sock, &buf, 1472, 0,
+                       (struct sockaddr *)&client_addr, &addr_len);
+
+        printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
+               ntohs(client_addr.sin_port));
+
+        packetHeader = *((struct PacketHeader *)&buf);
+        printf("%d\n", packetHeader.m_packetId);
+        printf("%d\n", packetHeader.m_secondaryPlayerCarIndex);
+
+        if (packetHeader.m_packetId == CAR_STATUS)
         {
-            perror("recvfrom()");
-            exit(1);
+            struct PacketCarStatusData packetCarStatusData = *((struct PacketCarStatusData *)&buf);
+            printf("%d\n", packetCarStatusData.m_carStatusData[0].m_drsAllowed);
         }
-        printf("retrieved %ld bytes\n", res);
+
+        switch (packetHeader.m_packetId)
+        {
+        case MOTION:
+            printf("MOTION packet\n");
+            break;
+        case SESSION:
+            printf("SESSION packet\n");
+            break;
+        case LAP_DATA:
+            printf("LAP_DATA packet\n");
+            break;
+        case EVENT:
+            printf("EVENT packet\n");
+            break;
+        case PARTICIPANTS:
+            printf("PARTICIPANTS packet\n");
+            break;
+        case CAR_SETUP:
+            printf("CAR_SETUP packet\n");
+            break;
+        case CAR_TELEMETRY:
+            printf("CAR_TELEMETRY packet\n");
+            break;
+        case CAR_STATUS:
+            printf("CAR_STATUS packet\n");
+            break;
+        case FINAL_CLASSIFICATION:
+            printf("FINAL_CLASSIFICATION packet\n");
+            break;
+        case LOBBY_INFO:
+            printf("LOBBY_INFO packet\n");
+            break;
+        case CAR_DAMAGE:
+            printf("CAR_DAMAGE packet\n");
+            break;
+        case SESSION_HISTORY:
+            printf("SESSION_HISTORY packet\n");
+            break;
+        }
+
+        if (PRODUCER)
+        {
+            printf("\nsending ack\n");
+            char *ack = "ack\0";
+            sendto(sock, ack, 4, 0, (struct sockaddr *)&client_addr, sizeof(struct sockaddr));
+
+            fflush(stdout);
+        }
     }
 
-    close(sockfd);
-    exit(0);
+    return 0;
 }

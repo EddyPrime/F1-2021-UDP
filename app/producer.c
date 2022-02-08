@@ -48,6 +48,10 @@ int main()
     printf("sizeof(session_history) = %ld\n", sizeof(struct PacketSessionHistoryData));
     printf("sizeof(session) = %ld\n", sizeof(struct PacketSessionData));
 
+    printf("sizeof(PacketCarStatusData) = %ld\n", sizeof(struct PacketCarStatusData));
+    printf("sizeof(Header) = %ld\n", sizeof(struct PacketHeader));
+    printf("sizeof(CarStatusData) = %ld\n", sizeof(struct CarStatusData));
+
     packetHeader = (struct PacketHeader){
         .m_packetFormat = 2021,
         .m_gameMajorVersion = 1,

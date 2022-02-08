@@ -36,6 +36,13 @@ int main(int argc, char **argv)
     }
     printf("connected to server\n");
 
+    if (0 && bind(sockfd, (struct sockaddr *)&servaddr, servaddrlen) < 0)
+    {
+        perror("bind()");
+        exit(1);
+    }
+    printf("binded\n");
+
     char buf[2000];
 
     while (1)

@@ -49,7 +49,7 @@ int main()
     uint8 chequeredFlag = 0;
 
     struct PacketCarStatusData packetCarStatusData;
-    uint8 prev_m_drsAllowed = 3;
+    uint8 prev_m_drsAllowed = 255;
     uint8 curr_m_drsAllowed = prev_m_drsAllowed;
 
     while (1)
@@ -76,9 +76,14 @@ int main()
             // printf("LAP_DATA packet\n");
             break;
         case EVENT:
-            //printf("EVENT packet\n");
+            // printf("EVENT packet\n");
             packetEventData = *((struct PacketEventData *)&buf);
-            switchs(packetEventData.m_eventStringCode) {
+            printf("[ %u, ", packetEventData.m_eventStringCode[0]);
+            printf("%u, ", packetEventData.m_eventStringCode[1]);
+            printf("%u, ", packetEventData.m_eventStringCode[2]);
+            printf("%u ]\n", packetEventData.m_eventStringCode[3]);
+            switchs(packetEventData.m_eventStringCode)
+            {
                 cases(DRS_ENABLED)
                     drsEnabled = 1;
                     printf("DRS ENABLED\n");
@@ -91,10 +96,11 @@ int main()
                     chequeredFlag = 1;
                     printf("CHEQUERED FLAG\n");
                     break;
-            } switchs_end;
+            }
+            switchs_end;
             break;
         case PARTICIPANTS:
-            //printf("PARTICIPANTS packet\n");
+            // printf("PARTICIPANTS packet\n");
             break;
         case CAR_SETUP:
             // printf("CAR_SETUP packet\n");

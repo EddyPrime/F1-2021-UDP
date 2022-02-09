@@ -13,6 +13,7 @@
 
 #include "../constants/_packet_ids.h"
 #include "../constants/_events_string_codes.h"
+#include "../constants/_fia_flags.h"
 
 #include "../config/config.h"
 

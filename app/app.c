@@ -51,6 +51,7 @@ int main()
     struct PacketCarStatusData packetCarStatusData;
     uint8 prev_m_drsAllowed = 255;
     uint8 curr_m_drsAllowed = prev_m_drsAllowed;
+    int8 m_vehicleFiaFlags;
 
     while (1)
     {
@@ -78,26 +79,11 @@ int main()
         case EVENT:
             // printf("EVENT packet\n");
             packetEventData = *((struct PacketEventData *)&buf);
+
             printf("[ %u, ", packetEventData.m_eventStringCode[0]);
             printf("%u, ", packetEventData.m_eventStringCode[1]);
             printf("%u, ", packetEventData.m_eventStringCode[2]);
             printf("%u ]\n", packetEventData.m_eventStringCode[3]);
-            switchs(packetEventData.m_eventStringCode)
-            {
-                cases(DRS_ENABLED)
-                    drsEnabled = 1;
-                    printf("DRS ENABLED\n");
-                    break;
-                cases(DRS_DISABLED)
-                    drsEnabled = 0;
-                    printf("DRS DISABLED\n");
-                    break;
-                cases(CHEQUERED_FLAG)
-                    chequeredFlag = 1;
-                    printf("CHEQUERED FLAG\n");
-                    break;
-            }
-            switchs_end;
             break;
         case PARTICIPANTS:
             // printf("PARTICIPANTS packet\n");
@@ -111,11 +97,32 @@ int main()
         case CAR_STATUS:
             // printf("CAR_STATUS packet\n");
             packetCarStatusData = *((struct PacketCarStatusData *)&buf);
+
             curr_m_drsAllowed = packetCarStatusData.m_carStatusData[m_playerCarIndex].m_drsAllowed;
             if (curr_m_drsAllowed != prev_m_drsAllowed)
             {
                 prev_m_drsAllowed = curr_m_drsAllowed;
                 printf("DRS ENABLED - ALLOwED { %u, %u }\n", drsEnabled, curr_m_drsAllowed);
+            }
+
+            m_vehicleFiaFlags = packetCarStatusData.m_carStatusData[m_playerCarIndex].m_vehicleFiaFlags;
+            switch (m_vehicleFiaFlags)
+            {
+            case GREEN:
+                printf("GREEN FLAG\n");
+                break;
+            case BLUE:
+                printf("BLUE FLAG\n");
+                break;
+            case YELLOW:
+                printf("YELLOW FLAG\n");
+                break;
+            case RED:
+                printf("RED FLAG\n");
+                break;
+            default:
+                printf("NO FLAG\n");
+                break;
             }
             break;
         case FINAL_CLASSIFICATION:

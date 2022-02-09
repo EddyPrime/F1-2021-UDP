@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "app.h"
+#include "switchs.h"
 
 int main()
 {
@@ -41,8 +42,15 @@ int main()
     printf("server waiting on port %d\n", PORT);
     fflush(stdout);
 
-    uint8 last_m_drsAllowed = 3;
-    uint8 curr_m_drsAllowed = last_m_drsAllowed;
+    uint8 m_playerCarIndex;
+
+    struct PacketEventData packetEventData;
+    uint8 drsEnabled = 0;
+    uint8 chequeredFlag = 0;
+
+    struct PacketCarStatusData packetCarStatusData;
+    uint8 prev_m_drsAllowed = 3;
+    uint8 curr_m_drsAllowed = prev_m_drsAllowed;
 
     while (1)
     {
@@ -50,64 +58,72 @@ int main()
         res = recvfrom(sock, &buf, 1472, 0,
                        (struct sockaddr *)&client_addr, &addr_len);
 
-        //printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
-        //       ntohs(client_addr.sin_port));
+        // printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
+        //        ntohs(client_addr.sin_port));
 
         packetHeader = *((struct PacketHeader *)&buf);
+        m_playerCarIndex = packetHeader.m_playerCarIndex;
 
-        if (packetHeader.m_packetId == CAR_STATUS)
+        switch (packetHeader.m_packetId)
         {
-            struct PacketCarStatusData packetCarStatusData = *((struct PacketCarStatusData *)&buf);
-            curr_m_drsAllowed = packetCarStatusData.m_carStatusData[21].m_drsAllowed;
-            if (curr_m_drsAllowed != last_m_drsAllowed) {
-                last_m_drsAllowed = curr_m_drsAllowed;
-                printf("drs allowed %u\n", curr_m_drsAllowed);
-            }
-        }
-
-        char switchEnabled = 0;
-
-        if (switchEnabled)
-        {
-            switch (packetHeader.m_packetId)
+        case MOTION:
+            // printf("MOTION packet\n");
+            break;
+        case SESSION:
+            // printf("SESSION packet\n");
+            break;
+        case LAP_DATA:
+            // printf("LAP_DATA packet\n");
+            break;
+        case EVENT:
+            //printf("EVENT packet\n");
+            packetEventData = *((struct PacketEventData *)&buf);
+            switchs(packetEventData.m_eventStringCode) {
+                cases(DRS_ENABLED)
+                    drsEnabled = 1;
+                    printf("DRS ENABLED\n");
+                    break;
+                cases(DRS_DISABLED)
+                    drsEnabled = 0;
+                    printf("DRS DISABLED\n");
+                    break;
+                cases(CHEQUERED_FLAG)
+                    chequeredFlag = 1;
+                    printf("CHEQUERED FLAG\n");
+                    break;
+            } switchs_end;
+            break;
+        case PARTICIPANTS:
+            //printf("PARTICIPANTS packet\n");
+            break;
+        case CAR_SETUP:
+            // printf("CAR_SETUP packet\n");
+            break;
+        case CAR_TELEMETRY:
+            // printf("CAR_TELEMETRY packet\n");
+            break;
+        case CAR_STATUS:
+            // printf("CAR_STATUS packet\n");
+            packetCarStatusData = *((struct PacketCarStatusData *)&buf);
+            curr_m_drsAllowed = packetCarStatusData.m_carStatusData[m_playerCarIndex].m_drsAllowed;
+            if (curr_m_drsAllowed != prev_m_drsAllowed)
             {
-            case MOTION:
-                printf("MOTION packet\n");
-                break;
-            case SESSION:
-                printf("SESSION packet\n");
-                break;
-            case LAP_DATA:
-                printf("LAP_DATA packet\n");
-                break;
-            case EVENT:
-                printf("EVENT packet\n");
-                break;
-            case PARTICIPANTS:
-                printf("PARTICIPANTS packet\n");
-                break;
-            case CAR_SETUP:
-                printf("CAR_SETUP packet\n");
-                break;
-            case CAR_TELEMETRY:
-                printf("CAR_TELEMETRY packet\n");
-                break;
-            case CAR_STATUS:
-                printf("CAR_STATUS packet\n");
-                break;
-            case FINAL_CLASSIFICATION:
-                printf("FINAL_CLASSIFICATION packet\n");
-                break;
-            case LOBBY_INFO:
-                printf("LOBBY_INFO packet\n");
-                break;
-            case CAR_DAMAGE:
-                printf("CAR_DAMAGE packet\n");
-                break;
-            case SESSION_HISTORY:
-                printf("SESSION_HISTORY packet\n");
-                break;
+                prev_m_drsAllowed = curr_m_drsAllowed;
+                printf("DRS ENABLED - ALLOwED { %u, %u }\n", drsEnabled, curr_m_drsAllowed);
             }
+            break;
+        case FINAL_CLASSIFICATION:
+            // printf("FINAL_CLASSIFICATION packet\n");
+            break;
+        case LOBBY_INFO:
+            // printf("LOBBY_INFO packet\n");
+            break;
+        case CAR_DAMAGE:
+            // printf("CAR_DAMAGE packet\n");
+            break;
+        case SESSION_HISTORY:
+            // printf("SESSION_HISTORY packet\n");
+            break;
         }
 
         if (PRODUCER)

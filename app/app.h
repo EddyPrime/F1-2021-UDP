@@ -12,6 +12,7 @@
 #include "../packets/session.h"
 
 #include "../constants/_packet_ids.h"
+#include "../constants/_events_string_codes.h"
 
 #include "../config/config.h"
 

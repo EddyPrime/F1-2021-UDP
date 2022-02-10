@@ -8,22 +8,22 @@ union EventDataDetails
     {
         uint8 vehicleIdx; // Vehicle index of car achieving fastest lap
         float lapTime;    // Lap time is in seconds
-    } FastestLap;
+    } FastestLap __attribute__((packed));
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of car retiring
-    } Retirement;
+    } Retirement __attribute__((packed));
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of team mate
-    } TeamMateInPits;
+    } TeamMateInPits __attribute__((packed));
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of the race winner
-    } RaceWinner;
+    } RaceWinner __attribute__((packed));
 
     struct
     {
@@ -34,7 +34,7 @@ union EventDataDetails
         uint8 time;             // Time gained, or time spent doing action in seconds
         uint8 lapNum;           // Lap the penalty occurred on
         uint8 placesGained;     // Number of places gained by this
-    } Penalty;
+    } Penalty __attribute__((packed));
 
     struct
     {
@@ -42,34 +42,34 @@ union EventDataDetails
         float speed;                   // Top speed achieved in kilometres per hour
         uint8 overallFastestInSession; // Overall fastest speed in session = 1, otherwise 0
         uint8 driverFastestInSession;  // Fastest speed for driver in session = 1, otherwise 0
-    } SpeedTrap;
+    } SpeedTrap __attribute__((packed));
 
     struct
     {
         uint8 numLights; // Number of lights showing
-    } StartLIghts;
+    } StartLIghts __attribute__((packed));
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of the vehicle serving drive through
-    } DriveThroughPenaltyServed;
+    } DriveThroughPenaltyServed __attribute__((packed));
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of the vehicle serving stop go
-    } StopGoPenaltyServed;
+    } StopGoPenaltyServed __attribute__((packed));
 
     struct
     {
         uint32 flashbackFrameIdentifier; // Frame identifier flashed back to
         float flashbackSessionTime;      // Session time flashed back to
-    } Flashback;
+    } Flashback __attribute__((packed));
 
     struct
     {
         uint32 m_buttonStatus; // Bit flags specifying which buttons are being pressed
                                // currently - see appendices
-    } Buttons;
+    } Buttons __attribute__((packed));
 };
 
 struct PacketEventData
@@ -79,4 +79,4 @@ struct PacketEventData
     uint8 m_eventStringCode[4];      // Event string code, see below
     union EventDataDetails m_eventDetails; // Event details - should be interpreted differently
                                      // for each type
-};
+} __attribute__((packed));

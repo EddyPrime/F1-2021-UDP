@@ -9,7 +9,7 @@ struct LobbyInfoData
                           // Will be truncated with ... (U+2026) if too long
     uint8 m_carNumber;    // Car number of the player
     uint8 m_readyStatus;  // 0 = not ready, 1 = ready, 2 = spectating
-};
+} __attribute__((packed));
 
 struct PacketLobbyInfoData
 {
@@ -18,4 +18,4 @@ struct PacketLobbyInfoData
     // Packet specific data
     uint8 m_numPlayers; // Number of players in the lobby data
     struct LobbyInfoData m_lobbyPlayers[22];
-};
+} __attribute__((packed));

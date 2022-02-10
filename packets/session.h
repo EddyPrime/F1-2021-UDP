@@ -4,7 +4,7 @@ struct MarshalZone
 {
     float m_zoneStart; // Fraction (0..1) of way through the lap the marshal zone starts
     int8 m_zoneFlag;   // -1 = invalid/unknown, 0 = none, 1 = green, 2 = blue, 3 = yellow, 4 = red
-};
+} __attribute__((packed));
 
 struct WeatherForecastSample
 {
@@ -19,7 +19,7 @@ struct WeatherForecastSample
     int8 m_airTemperature;         // Air temp. in degrees celsius
     int8 m_airTemperatureChange;   // Air temp. change – 0 = up, 1 = down, 2 = no change
     uint8 m_rainPercentage;        // Rain percentage (0-100)
-};
+} __attribute__((packed));
 
 struct PacketSessionData
 {
@@ -68,4 +68,4 @@ struct PacketSessionData
     uint8 m_DRSAssist;                                         // 0 = off, 1 = on
     uint8 m_dynamicRacingLine;                                 // 0 = off, 1 = corners only, 2 = full
     uint8 m_dynamicRacingLineType;                             // 0 = 2D, 1 = 3D
-};
+} __attribute__((packed));

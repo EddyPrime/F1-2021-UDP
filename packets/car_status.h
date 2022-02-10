@@ -1,4 +1,5 @@
 #include "header.h"
+
 struct CarStatusData
 {
     uint8 m_tractionControl;         // Traction control - 0 = off, 1 = medium, 2 = full
@@ -35,10 +36,11 @@ struct CarStatusData
     float m_ersHarvestedThisLapMGUH; // ERS energy harvested this lap by MGU-H
     float m_ersDeployedThisLap;      // ERS energy deployed this lap
     uint8 m_networkPaused;           // Whether the car is paused in a network game
-};
+} __attribute__((packed));
+
 struct PacketCarStatusData
 {
     struct PacketHeader m_header; // Header
     
     struct CarStatusData m_carStatusData[22];
-};
+} __attribute__((packed));

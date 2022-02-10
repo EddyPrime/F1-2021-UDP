@@ -20,11 +20,11 @@ struct CarDamageData
     uint8 m_engineICEWear;        // Engine wear ICE (percentage)
     uint8 m_engineMGUKWear;       // Engine wear MGU-K (percentage)
     uint8 m_engineTCWear;         // Engine wear TC (percentage)
-};
+} __attribute__((packed));
 
 struct PacketCarDamageData
 {
     struct PacketHeader m_header; // Header
     
     struct CarDamageData m_carDamageData[22];
-};
+} __attribute__((packed));

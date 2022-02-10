@@ -7,16 +7,23 @@
 #include <stdlib.h>
 
 #include "app.h"
-#include "switchs.h"
+
+uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
+{
+    uint8 res = c1[0] == c2[0];
+    res &= c1[1] == c2[1];
+    res &= c1[2] == c2[2];
+    return res && (c1[3] == c2[3]);
+}
 
 int main()
 {
     int sock;
-    int addr_len;
+    size_t addr_len;
     ssize_t res;
     struct sockaddr_in server_addr, client_addr;
 
-    char buf[1472];
+    char buf[PACKET_MAX_SIZE];
     struct PacketHeader packetHeader;
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
@@ -51,13 +58,14 @@ int main()
     struct PacketCarStatusData packetCarStatusData;
     uint8 prev_m_drsAllowed = 255;
     uint8 curr_m_drsAllowed = prev_m_drsAllowed;
-    int8 m_vehicleFiaFlags;
+    int8 prev_m_vehicleFiaFlags = NONE;
+    int8 curr_m_vehicleFiaFlags;
 
     while (1)
     {
 
         res = recvfrom(sock, &buf, 1472, 0,
-                       (struct sockaddr *)&client_addr, &addr_len);
+                       (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
 
         // printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
         //        ntohs(client_addr.sin_port));
@@ -79,11 +87,25 @@ int main()
         case EVENT:
             // printf("EVENT packet\n");
             packetEventData = *((struct PacketEventData *)&buf);
+            
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_ENABLED)) {
+                printf("DRS ENABLED\n");
+                drsEnabled = 1;
+                break;
+            }
 
-            printf("[ %u, ", packetEventData.m_eventStringCode[0]);
-            printf("%u, ", packetEventData.m_eventStringCode[1]);
-            printf("%u, ", packetEventData.m_eventStringCode[2]);
-            printf("%u ]\n", packetEventData.m_eventStringCode[3]);
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_DISABLED)) {
+                printf("DRS DISABLED\n");
+                drsEnabled = 0;
+                break;
+            }
+
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, CHEQUERED_FLAG)) {
+                printf("CHEQUERED FLAG\n");
+                chequeredFlag = 1;
+                break;
+            }
+
             break;
         case PARTICIPANTS:
             // printf("PARTICIPANTS packet\n");
@@ -105,23 +127,39 @@ int main()
                 printf("DRS ENABLED - ALLOwED { %u, %u }\n", drsEnabled, curr_m_drsAllowed);
             }
 
-            m_vehicleFiaFlags = packetCarStatusData.m_carStatusData[m_playerCarIndex].m_vehicleFiaFlags;
-            switch (m_vehicleFiaFlags)
+            curr_m_vehicleFiaFlags = packetCarStatusData.m_carStatusData[m_playerCarIndex].m_vehicleFiaFlags;
+            switch (curr_m_vehicleFiaFlags)
             {
             case GREEN:
-                printf("GREEN FLAG\n");
+                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
+                {
+                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
+                    printf("GREEN FLAG\n");
+                }
                 break;
             case BLUE:
-                printf("BLUE FLAG\n");
+                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
+                {
+                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
+                    printf("BLUE FLAG\n");
+                }
                 break;
             case YELLOW:
-                printf("YELLOW FLAG\n");
+                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
+                {
+                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
+                    printf("YELLOW FLAG\n");
+                }
                 break;
             case RED:
-                printf("RED FLAG\n");
+                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
+                {
+                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
+                    printf("RED FLAG\n");
+                }
                 break;
             default:
-                printf("NO FLAG\n");
+                // printf("NO FLAG\n");
                 break;
             }
             break;

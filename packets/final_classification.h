@@ -17,11 +17,11 @@ struct FinalClassificationData
     uint8 m_numTyreStints;       // Number of tyres stints up to maximum
     uint8 m_tyreStintsActual[8]; // Actual tyres used by this driver
     uint8 m_tyreStintsVisual[8]; // Visual tyres used by this driver
-};
+} __attribute__((packed));
 struct PacketFinalClassificationData
 {
     struct PacketHeader m_header; // Header
 
     uint8 m_numCars; // Number of cars in the final classification
     struct FinalClassificationData m_classificationData[22];
-};
+} __attribute__((packed));

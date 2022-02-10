@@ -18,7 +18,8 @@ struct CarTelemetryData
     uint16 m_engineTemperature;         // Engine temperature (celsius)
     float m_tyresPressure[4];           // Tyres pressure (PSI)
     uint8 m_surfaceType[4];             // Driving surface, see appendices
-};
+} __attribute__((packed));
+
 
 struct PacketCarTelemetryData
 {
@@ -33,4 +34,4 @@ struct PacketCarTelemetryData
     uint8 m_mfdPanelIndexSecondaryPlayer; // See above
     int8 m_suggestedGear;                 // Suggested gear for the player (1-8)
                                           // 0 if no gear suggested
-};
+} __attribute__((packed));

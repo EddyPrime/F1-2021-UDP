@@ -8,14 +8,14 @@ struct LapHistoryData
     uint16 m_sector3TimeInMS; // Sector 3 time in milliseconds
     uint8 m_lapValidBitFlags; // 0x01 bit set-lap valid,      0x02 bit set-sector 1 valid
                               // 0x04 bit set-sector 2 valid, 0x08 bit set-sector 3 valid
-};
+} __attribute__((packed));
 
 struct TyreStintHistoryData
 {
     uint8 m_endLap;             // Lap the tyre usage ends on (255 of current tyre)
     uint8 m_tyreActualCompound; // Actual tyres used by this driver
     uint8 m_tyreVisualCompound; // Visual tyres used by this driver
-};
+} __attribute__((packed));
 
 struct PacketSessionHistoryData
 {
@@ -32,4 +32,4 @@ struct PacketSessionHistoryData
 
     struct LapHistoryData m_lapHistoryData[100]; // 100 laps of data max
     struct TyreStintHistoryData m_tyreStintsHistoryData[8];
-};
+} __attribute__((packed));

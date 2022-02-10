@@ -20,7 +20,7 @@ struct CarMotionData
     float m_yaw;                // Yaw angle in radians
     float m_pitch;              // Pitch angle in radians
     float m_roll;               // Roll angle in radians
-};
+} __attribute__((packed));
 
 struct PacketMotionData
 {
@@ -44,4 +44,4 @@ struct PacketMotionData
     float m_angularAccelerationY;      // Angular velocity y-component
     float m_angularAccelerationZ;      // Angular velocity z-component
     float m_frontWheelsAngle;          // Current front wheels angle in radians
-};
+} __attribute__((packed));

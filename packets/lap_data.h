@@ -31,11 +31,11 @@ struct LapData
     uint16 m_pitLaneTimeInLaneInMS;      // If active, the current time spent in the pit lane in ms
     uint16 m_pitStopTimerInMS;           // Time of the actual pit stop in ms
     uint8 m_pitStopShouldServePen;       // Whether the car should serve a penalty at this stop
-};
+} __attribute__((packed));
 
 struct PacketLapData
 {
     struct PacketHeader m_header; // Header
 
     struct LapData m_lapData[22]; // Lap data for all cars on track
-};
+} __attribute__((packed));

@@ -77,10 +77,6 @@ int main()
 
         sendto(sock, &packetCarStatusData, sizeof(struct PacketCarStatusData), 0,
                (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
-
-        res = recvfrom(sock, recv_data, 8, 0, (struct sockaddr *)&server_addr, &sin_size);
-        recv_data[res] = '\0';
-        printf("Received :%s\n", recv_data);
         sleep(5);
     }
 }

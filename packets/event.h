@@ -13,17 +13,17 @@ union EventDataDetails
     struct
     {
         uint8 vehicleIdx; // Vehicle index of car retiring
-    } Retirement __attribute__((packed));
+    } Retirement;
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of team mate
-    } TeamMateInPits __attribute__((packed));
+    } TeamMateInPits;
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of the race winner
-    } RaceWinner __attribute__((packed));
+    } RaceWinner;
 
     struct
     {
@@ -34,7 +34,7 @@ union EventDataDetails
         uint8 time;             // Time gained, or time spent doing action in seconds
         uint8 lapNum;           // Lap the penalty occurred on
         uint8 placesGained;     // Number of places gained by this
-    } Penalty __attribute__((packed));
+    } Penalty;
 
     struct
     {
@@ -47,17 +47,17 @@ union EventDataDetails
     struct
     {
         uint8 numLights; // Number of lights showing
-    } StartLIghts __attribute__((packed));
+    } StartLIghts;
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of the vehicle serving drive through
-    } DriveThroughPenaltyServed __attribute__((packed));
+    } DriveThroughPenaltyServed;
 
     struct
     {
         uint8 vehicleIdx; // Vehicle index of the vehicle serving stop go
-    } StopGoPenaltyServed __attribute__((packed));
+    } StopGoPenaltyServed;
 
     struct
     {
@@ -69,7 +69,7 @@ union EventDataDetails
     {
         uint32 m_buttonStatus; // Bit flags specifying which buttons are being pressed
                                // currently - see appendices
-    } Buttons __attribute__((packed));
+    } Buttons;
 };
 
 struct PacketEventData

@@ -52,20 +52,18 @@ int main()
     uint8 m_playerCarIndex;
 
     struct PacketEventData packetEventData;
-    uint8 drsEnabled = 0;
-    uint8 chequeredFlag = 0;
+    uint8 drsEnabled = 0, chequeredFlag = 0;
 
     struct PacketCarStatusData packetCarStatusData;
-    uint8 prev_m_drsAllowed = 255;
-    uint8 curr_m_drsAllowed = prev_m_drsAllowed;
-    int8 prev_m_vehicleFiaFlags = NONE;
-    int8 curr_m_vehicleFiaFlags;
+    uint8 curr_m_drsAllowed, prev_m_drsAllowed = 255;
+    int8 curr_m_vehicleFiaFlags, prev_m_vehicleFiaFlags = INVALID_UNKNOWN;
 
     while (1)
     {
 
-        res = recvfrom(sock, &buf, 1472, 0,
+        res = recvfrom(sock, &buf, PACKET_MAX_SIZE, 0,
                        (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
+        res = res;  //FOR COMPILER HAPPINESS
 
         // printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
         //        ntohs(client_addr.sin_port));
@@ -175,15 +173,6 @@ int main()
         case SESSION_HISTORY:
             // printf("SESSION_HISTORY packet\n");
             break;
-        }
-
-        if (PRODUCER)
-        {
-            printf("\nsending ack\n");
-            char *ack = "ack\0";
-            sendto(sock, ack, 4, 0, (struct sockaddr *)&client_addr, sizeof(struct sockaddr));
-
-            fflush(stdout);
         }
     }
 

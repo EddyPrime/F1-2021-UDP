@@ -4,6 +4,7 @@
         "stdlib.h": "c",
         "inet.h": "c",
         "lap_data.h": "c",
-        "_events_string_codes.h": "c"
+        "_events_string_codes.h": "c",
+        "car_telemetry.h": "c"
     }
 }

@@ -52,7 +52,8 @@ int main()
     uint8 m_playerCarIndex;
 
     struct PacketEventData packetEventData;
-    uint8 drsEnabled = 0, chequeredFlag = 0;
+    uint8 drsEnabled = 0, chequeredFlag = 0, drsActivated = 0;
+    uint32 m_buttonStatus;
 
     struct PacketCarStatusData packetCarStatusData;
     uint8 curr_m_drsAllowed, prev_m_drsAllowed = 255;
@@ -63,7 +64,7 @@ int main()
 
         res = recvfrom(sock, &buf, PACKET_MAX_SIZE, 0,
                        (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
-        res = res;  //FOR COMPILER HAPPINESS
+        res = res; // FOR COMPILER HAPPINESS
 
         // printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
         //        ntohs(client_addr.sin_port));
@@ -85,22 +86,59 @@ int main()
         case EVENT:
             // printf("EVENT packet\n");
             packetEventData = *((struct PacketEventData *)&buf);
-            
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_ENABLED)) {
+
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_ENABLED))
+            {
                 printf("DRS ENABLED\n");
                 drsEnabled = 1;
                 break;
             }
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_DISABLED)) {
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_DISABLED))
+            {
                 printf("DRS DISABLED\n");
                 drsEnabled = 0;
+                drsActivated = 0;
                 break;
             }
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, CHEQUERED_FLAG)) {
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, CHEQUERED_FLAG))
+            {
                 printf("CHEQUERED FLAG\n");
                 chequeredFlag = 1;
+                break;
+            }
+
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, BUTTON_STATUS))
+            {
+                printf("BUTTON STATUS\n");
+                m_buttonStatus = packetEventData.m_eventDetails.Buttons.m_buttonStatus;
+
+                /*
+                 *   If the vehicle breaks and the drs is active, then
+                 *   it must be turned off.
+                 */
+                if (drsActivated && m_buttonStatus & SQUARE_OR_X)
+                {
+                    drsActivated = 0;
+                    printf("DRS DEACTIVATED DUE TO BREAK\n");
+                }
+
+                /*
+                 *   If the driver presses triangle, then
+                 *   - if the drs has been enabled, it must be activated;
+                 *   - if the drs is active, it must be turned off.
+                 *   Notice that, if the drs is disabled, then the drs is
+                 *   turned off as well - see above.
+                 */
+                if (m_buttonStatus & TRIANGLE_OR_Y)
+                {
+                    if (drsEnabled)
+                    {
+                        drsActivated = 1 - drsActivated;
+                        printf("DRS TURNED %u\n", drsActivated);
+                    }
+                }
                 break;
             }
 

@@ -20,7 +20,8 @@
 uint8 m_playerCarIndex, drsActivated;
 
 struct PacketSessionData packetSessionData;
-uint8 m_sessionType;
+uint8 curr_m_sessionType, prev_m_sessionType;
+uint8 curr_m_weather;
 
 struct PacketEventData packetEventData;
 uint8 drsEnabled, chequeredFlag;
@@ -94,15 +95,25 @@ int main()
         case SESSION:
             // printf("SESSION packet\n");
             packetSessionData = *((struct PacketSessionData *)&buf);
-            m_sessionType = packetSessionData.m_sessionType;
-            if (m_sessionType == UNKNOWN || m_sessionType == R ||
-                m_sessionType == R1 || m_sessionType == R2)
+            curr_m_sessionType = packetSessionData.m_sessionType;
+            curr_m_weather = packetSessionData.m_weather;
+
+            if (curr_m_sessionType != prev_m_sessionType)
             {
-                drsEnabled = 0;
-                break;
+                prev_m_sessionType = curr_m_sessionType;
+                if (curr_m_sessionType == R || curr_m_sessionType == R1 || curr_m_sessionType == R2)
+                {
+                    drsEnabled = 0;
+                    break;
+                }
+                if (curr_m_weather == LIGHT_RAIN || curr_m_weather == HEAVY_RAIN || curr_m_weather == STORM)
+                {
+                    drsEnabled = 0;
+                    break;
+                }
+                printf("DRS ENABLED BY DEFAULT\n");
+                drsEnabled = 1;
             }
-            printf("DRS ENABLED BY DEFAULT\n");
-            drsEnabled = 1;
             break;
         case LAP_DATA:
             // printf("LAP_DATA packet\n");
@@ -113,11 +124,13 @@ int main()
 
             if (evenStringCodeCmp(packetEventData.m_eventStringCode, SESSION_STARTED))
             {
+                printf("SESSION STARTED\n");
             init:
                 drsActivated = 0;
                 chequeredFlag = 0;
                 prev_m_drsAllowed = 255;
                 prev_m_vehicleFiaFlags = INVALID_UNKNOWN;
+                prev_m_sessionType = UNKNOWN;
                 color = "None";
                 break;
             }

@@ -16,6 +16,7 @@
 #include "../constants/_fia_flags.h"
 #include "../constants/_button_flags.h"
 #include "../constants/_session_types.h"
+#include "../constants/_weather.h"
 
 
 #include "../config/config.h"

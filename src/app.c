@@ -1,12 +1,17 @@
 #include <stdio.h>
-#include <sys/types.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "app.h"
+
+#if __linux__
+    #include <arpa/inet.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h> 
+#elif _WIN32
+    #include <winsock2.h>
+#endif
 
 uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
 {

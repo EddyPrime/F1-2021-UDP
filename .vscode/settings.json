@@ -5,6 +5,7 @@
         "inet.h": "c",
         "lap_data.h": "c",
         "_events_string_codes.h": "c",
-        "car_telemetry.h": "c"
+        "car_telemetry.h": "c",
+        "types.h": "c"
     }
 }

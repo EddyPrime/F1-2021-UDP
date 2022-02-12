@@ -5,12 +5,12 @@
 
 #include "app.h"
 
-#if __linux__
-    #include <arpa/inet.h>
-    #include <sys/socket.h>
-    #include <netinet/in.h> 
+#if __linux__ || __APPLE__
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #elif _WIN32
-    #include <winsock2.h>
+#include <winsock2.h>
 #endif
 
 uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
@@ -63,6 +63,7 @@ int main()
     struct PacketCarStatusData packetCarStatusData;
     uint8 curr_m_drsAllowed, prev_m_drsAllowed = 255;
     int8 curr_m_vehicleFiaFlags, prev_m_vehicleFiaFlags = INVALID_UNKNOWN;
+    char *color = "";
 
     while (1)
     {
@@ -116,33 +117,39 @@ int main()
 
             if (evenStringCodeCmp(packetEventData.m_eventStringCode, BUTTON_STATUS))
             {
-                printf("BUTTON STATUS\n");
+                // printf("BUTTON STATUS\n");
                 m_buttonStatus = packetEventData.m_eventDetails.Buttons.m_buttonStatus;
 
+                /* NOTE: if drs is allowed, when it is activated then drsAllowed=0. */
+
                 /*
-                 *   If the vehicle breaks and the drs is active, then
-                 *   it must be turned off.
+                 *   If the vehicle breaks and the drs is active,
+                 *   then it must be turned off.
                  */
-                if (drsActivated && m_buttonStatus & SQUARE_OR_X)
+                if (drsActivated && (m_buttonStatus & L2_OR_LT))
                 {
                     drsActivated = 0;
                     printf("DRS DEACTIVATED DUE TO BREAK\n");
                 }
 
                 /*
-                 *   If the driver presses triangle, then
-                 *   - if the drs has been enabled, it must be activated;
-                 *   - if the drs is active, it must be turned off.
-                 *   Notice that, if the drs is disabled, then the drs is
-                 *   turned off as well - see above.
+                 *   If the drs is active and the driver pushes the drs button,
+                 *   then it must be turned off.
                  */
-                if (m_buttonStatus & TRIANGLE_OR_Y)
+                if (drsActivated && (m_buttonStatus & TRIANGLE_OR_Y))
                 {
-                    if (drsEnabled)
-                    {
-                        drsActivated = 1 - drsActivated;
-                        printf("DRS TURNED %u\n", drsActivated);
-                    }
+                    drsActivated = 0;
+                    printf("DRS DEACTIVATED\n");
+                }
+
+                /*
+                 *   If the drs is allowed but not active and the driver pushes the drs button,
+                 *   then it must be turned on.
+                 */
+                if (!drsActivated && curr_m_drsAllowed && (m_buttonStatus & TRIANGLE_OR_Y))
+                {
+                    drsActivated = 1;
+                    printf("DRS ACTIVATED\n");
                 }
                 break;
             }
@@ -172,36 +179,32 @@ int main()
             switch (curr_m_vehicleFiaFlags)
             {
             case GREEN:
-                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
-                {
-                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
-                    printf("GREEN FLAG\n");
-                }
+                color = "Green";
+                goto flagColor;
                 break;
             case BLUE:
-                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
-                {
-                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
-                    printf("BLUE FLAG\n");
-                }
+                color = "Blue";
+                goto flagColor;
                 break;
             case YELLOW:
-                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
-                {
-                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
-                    printf("YELLOW FLAG\n");
-                }
+                color = "Yellow";
+                goto flagColor;
                 break;
             case RED:
-                if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
-                {
-                    prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
-                    printf("RED FLAG\n");
-                }
+                color = "Red";
+                goto flagColor;
                 break;
             default:
-                // printf("NO FLAG\n");
+                color = "None";
+                goto flagColor;
                 break;
+            }
+
+        flagColor:
+            if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
+            {
+                prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
+                printf("%s FLAG\n", color);
             }
             break;
         case FINAL_CLASSIFICATION:

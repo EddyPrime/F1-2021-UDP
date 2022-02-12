@@ -15,6 +15,7 @@
 #include "../constants/_events_string_codes.h"
 #include "../constants/_fia_flags.h"
 #include "../constants/_button_flags.h"
+#include "../constants/_session_types.h"
 
 
 #include "../config/config.h"

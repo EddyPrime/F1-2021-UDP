@@ -6,12 +6,31 @@
 #include "app.h"
 
 #if __linux__ || __APPLE__
+
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
 #elif _WIN32
+
 #include <winsock2.h>
+
 #endif
+
+uint8 m_playerCarIndex, drsActivated;
+
+struct PacketSessionData packetSessionData;
+uint8 m_sessionType;
+
+struct PacketEventData packetEventData;
+uint8 drsEnabled, chequeredFlag;
+uint32 m_buttonStatus;
+
+struct PacketCarStatusData packetCarStatusData;
+uint8 curr_m_drsAllowed, prev_m_drsAllowed;
+int8 curr_m_vehicleFiaFlags, prev_m_vehicleFiaFlags;
+
+char *color;
 
 uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
 {
@@ -54,17 +73,6 @@ int main()
     printf("server waiting on port %d\n", PORT);
     fflush(stdout);
 
-    uint8 m_playerCarIndex;
-
-    struct PacketEventData packetEventData;
-    uint8 drsEnabled = 0, chequeredFlag = 0, drsActivated = 0;
-    uint32 m_buttonStatus;
-
-    struct PacketCarStatusData packetCarStatusData;
-    uint8 curr_m_drsAllowed, prev_m_drsAllowed = 255;
-    int8 curr_m_vehicleFiaFlags, prev_m_vehicleFiaFlags = INVALID_UNKNOWN;
-    char *color = "";
-
     while (1)
     {
 
@@ -85,6 +93,16 @@ int main()
             break;
         case SESSION:
             // printf("SESSION packet\n");
+            packetSessionData = *((struct PacketSessionData *)&buf);
+            m_sessionType = packetSessionData.m_sessionType;
+            if (m_sessionType == UNKNOWN || m_sessionType == R ||
+                m_sessionType == R1 || m_sessionType == R2)
+            {
+                drsEnabled = 0;
+                break;
+            }
+            printf("DRS ENABLED BY DEFAULT\n");
+            drsEnabled = 1;
             break;
         case LAP_DATA:
             // printf("LAP_DATA packet\n");
@@ -92,6 +110,17 @@ int main()
         case EVENT:
             // printf("EVENT packet\n");
             packetEventData = *((struct PacketEventData *)&buf);
+
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, SESSION_STARTED))
+            {
+            init:
+                drsActivated = 0;
+                chequeredFlag = 0;
+                prev_m_drsAllowed = 255;
+                prev_m_vehicleFiaFlags = INVALID_UNKNOWN;
+                color = "None";
+                break;
+            }
 
             if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_ENABLED))
             {
@@ -176,34 +205,29 @@ int main()
             }
 
             curr_m_vehicleFiaFlags = packetCarStatusData.m_carStatusData[m_playerCarIndex].m_vehicleFiaFlags;
-            switch (curr_m_vehicleFiaFlags)
-            {
-            case GREEN:
-                color = "Green";
-                goto flagColor;
-                break;
-            case BLUE:
-                color = "Blue";
-                goto flagColor;
-                break;
-            case YELLOW:
-                color = "Yellow";
-                goto flagColor;
-                break;
-            case RED:
-                color = "Red";
-                goto flagColor;
-                break;
-            default:
-                color = "None";
-                goto flagColor;
-                break;
-            }
-
-        flagColor:
             if (curr_m_vehicleFiaFlags != prev_m_vehicleFiaFlags)
             {
                 prev_m_vehicleFiaFlags = curr_m_vehicleFiaFlags;
+                switch (curr_m_vehicleFiaFlags)
+                {
+                case GREEN:
+                    color = "Green";
+                    goto flagColor;
+                case BLUE:
+                    color = "Blue";
+                    goto flagColor;
+                case YELLOW:
+                    color = "Yellow";
+                    goto flagColor;
+                case RED:
+                    color = "Red";
+                    goto flagColor;
+                default:
+                    color = "None";
+                    goto flagColor;
+                }
+
+            flagColor:
                 printf("%s FLAG\n", color);
             }
             break;

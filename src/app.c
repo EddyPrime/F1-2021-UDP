@@ -43,13 +43,26 @@ uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
 
 int main()
 {
-    int sock;
+    int sock, serial;
     size_t addr_len;
     ssize_t res;
     struct sockaddr_in server_addr, client_addr;
 
     char buf[PACKET_MAX_SIZE];
     struct PacketHeader packetHeader;
+
+    uint16 cmd;
+    char msg[2];
+
+    cmd = AVR_DRS_ACTIVATED;
+    msg = cmd;
+
+    serial = serialport_init();
+    while (1) {
+        serialport_write(serial, msg, 16);
+        sleep(2);
+    }
+    serialport_close(serial);
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {

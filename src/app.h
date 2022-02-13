@@ -18,8 +18,12 @@
 #include "../constants/_session_types.h"
 #include "../constants/_weather.h"
 
-
 #include "../config/config.h"
+
+#include "../avr/serial.h"
+#include "../avr/commands.h"
+
+#include "../utils/bit.h"
 
 #define SERVER_ADDRESS "127.0.0.1"
 #define PORT 20777

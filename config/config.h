@@ -1,1 +1,4 @@
+#define SERVER_ADDRESS "127.0.0.1"
+#define PORT 20777
+
 #define PACKET_MAX_SIZE 1464 //1472

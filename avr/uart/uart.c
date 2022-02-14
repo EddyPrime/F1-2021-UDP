@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 
-#include "../commands.h"
+#include "../../communication/commands.h"
 
 #define BAUD 19600
 #define MYUBRR (F_CPU / 16 / BAUD - 1)
@@ -75,37 +75,21 @@ void UART_putString(uint8_t *buf)
 int main(void)
 {
     UART_init();
-    uint8_t buf[MAX_BUF];
     uint8_t cmd;
 
     UART_putString((uint8_t *)"test\n");
 
     while (1)
     {
-        //UART_getChar(buf);
-        //cmd = buf[0];
         cmd = UART_getChar();
 
-        /*switch (cmd)
-        {
-        case AVR_DRS_ENABLED_BIT:
-            UART_putString((uint8_t *)"DRSE\n");
-            break;
-        case AVR_DRS_ALLOWED_BIT:
-            UART_putString((uint8_t *)"DRSL\n");
-            break;
-        default:
-            UART_putString((uint8_t *)"ella\n");
-            break;
-        }*/
-
-        if (check_bit(cmd, AVR_DRS_ENABLED_BIT)) {
+        if (check_bit(cmd, DRS_ENABLED_BIT)) {
             UART_putString((uint8_t *)"DRSE\n");
         }
-        if (check_bit(cmd, AVR_GREEN_FLAG_BIT)) {
+        if (check_bit(cmd, GREEN_FLAG_BIT)) {
             UART_putString((uint8_t *)"GRFL\n");
         }
-        if (check_bit(cmd, AVR_BLUE_FLAG_BIT)) {
+        if (check_bit(cmd, BLUE_FLAG_BIT)) {
             UART_putString((uint8_t *)"BLFL\n");
         }
     }

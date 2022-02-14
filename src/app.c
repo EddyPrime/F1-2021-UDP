@@ -43,7 +43,7 @@ uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
 
 int main()
 {
-    int sock, serial;
+    int sock;
     size_t addr_len;
     ssize_t res;
     struct sockaddr_in server_addr, client_addr;
@@ -51,18 +51,7 @@ int main()
     char buf[PACKET_MAX_SIZE];
     struct PacketHeader packetHeader;
 
-    uint16 cmd;
-    char msg[2];
-
-    cmd = AVR_DRS_ACTIVATED;
-    msg = cmd;
-
-    serial = serialport_init();
-    while (1) {
-        serialport_write(serial, msg, 16);
-        sleep(2);
-    }
-    serialport_close(serial);
+    uint8 cmd;
 
     if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
@@ -87,9 +76,9 @@ int main()
     printf("server waiting on port %d\n", PORT);
     fflush(stdout);
 
+    cmd = AVR_CMD;
     while (1)
     {
-
         res = recvfrom(sock, &buf, PACKET_MAX_SIZE, 0,
                        (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
         res = res; // FOR COMPILER HAPPINESS

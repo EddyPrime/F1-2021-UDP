@@ -6,71 +6,107 @@
 #include "../commands.h"
 
 #define BAUD 19600
-#define MYUBRR (F_CPU/16/BAUD-1)
+#define MYUBRR (F_CPU / 16 / BAUD - 1)
 
-void UART_init(void){
-  // Set baud rate
-  UBRR0H = (uint8_t)(MYUBRR>>8);
-  UBRR0L = (uint8_t)MYUBRR;
+void UART_init(void)
+{
+    // Set baud rate
+    UBRR0H = (uint8_t)(MYUBRR >> 8);
+    UBRR0L = (uint8_t)MYUBRR;
 
-  UCSR0C = (1<<UCSZ01) | (1<<UCSZ00); /* 8-bit data */ 
-  UCSR0B = (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0);   /* Enable RX and TX */  
-
+    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);               /* 8-bit data */
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0); /* Enable RX and TX */
 }
 
-void UART_putChar(uint8_t c){
-  // wait for transmission completed, looping on status bit
-  while ( !(UCSR0A & (1<<UDRE0)) );
+void UART_putChar(uint8_t c)
+{
+    // wait for transmission completed, looping on status bit
+    while (!(UCSR0A & (1 << UDRE0)))
+        ;
 
-  // Start transmission
-  UDR0 = c;
+    // Start transmission
+    UDR0 = c;
 }
 
-uint8_t UART_getChar(void){
-  // Wait for incoming data, looping on status bit
-  while ( !(UCSR0A & (1<<RXC0)) );
-  
-  // Return the data
-  return UDR0;
-    
+uint8_t UART_getChar(void)
+{
+    // Wait for incoming data, looping on status bit
+    while (!(UCSR0A & (1 << RXC0)))
+        ;
+
+    // Return the data
+    return UDR0;
 }
 
 // reads a string until the first newline or 0
 // returns the size read
-uint8_t UART_getString(uint8_t* buf){
-  uint8_t* b0=buf; //beginning of buffer
-  while(1){
-    uint8_t c=UART_getChar();
-    *buf=c;
-    ++buf;
-    // reading a 0 terminates the string
-    if (c==0)
-      return buf-b0;
-    // reading a \n  or a \r return results
-    // in forcedly terminating the string
-    if(c=='\n'||c=='\r'){
-      *buf=0;
-      ++buf;
-      return buf-b0;
+uint8_t UART_getString(uint8_t *buf)
+{
+    uint8_t *b0 = buf; // beginning of buffer
+    while (1)
+    {
+        uint8_t c = UART_getChar();
+        *buf = c;
+        ++buf;
+        // reading a 0 terminates the string
+        if (c == 0)
+            return buf - b0;
+        // reading a \n  or a \r return results
+        // in forcedly terminating the string
+        if (c == '\n' || c == '\r')
+        {
+            *buf = 0;
+            ++buf;
+            return buf - b0;
+        }
     }
-  }
 }
 
-void UART_putString(uint8_t* buf){
-  while(*buf){
-    UART_putChar(*buf);
-    ++buf;
-  }
+void UART_putString(uint8_t *buf)
+{
+    while (*buf)
+    {
+        UART_putChar(*buf);
+        ++buf;
+    }
 }
 
 #define MAX_BUF 256
-int main(void){
-  UART_init();
-  UART_putString((uint8_t*)"write something, i'll repeat it\n");
-  uint8_t buf[MAX_BUF];
-  while(1) {
-    UART_getString(buf);
-    UART_putString((uint8_t*)"received\n");
-    UART_putString(buf);
-  }
+int main(void)
+{
+    UART_init();
+    uint8_t buf[MAX_BUF];
+    uint8_t cmd;
+
+    UART_putString((uint8_t *)"test\n");
+
+    while (1)
+    {
+        //UART_getChar(buf);
+        //cmd = buf[0];
+        cmd = UART_getChar();
+
+        /*switch (cmd)
+        {
+        case AVR_DRS_ENABLED_BIT:
+            UART_putString((uint8_t *)"DRSE\n");
+            break;
+        case AVR_DRS_ALLOWED_BIT:
+            UART_putString((uint8_t *)"DRSL\n");
+            break;
+        default:
+            UART_putString((uint8_t *)"ella\n");
+            break;
+        }*/
+
+        if (check_bit(cmd, AVR_DRS_ENABLED_BIT)) {
+            UART_putString((uint8_t *)"DRSE\n");
+        }
+        if (check_bit(cmd, AVR_GREEN_FLAG_BIT)) {
+            UART_putString((uint8_t *)"GRFL\n");
+        }
+        if (check_bit(cmd, AVR_BLUE_FLAG_BIT)) {
+            UART_putString((uint8_t *)"BLFL\n");
+        }
+    }
 }

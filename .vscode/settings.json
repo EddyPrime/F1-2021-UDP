@@ -7,6 +7,7 @@
         "_events_string_codes.h": "c",
         "car_telemetry.h": "c",
         "types.h": "c",
-        "_button_flags.h": "c"
+        "_button_flags.h": "c",
+        "SKJFDSJK.C": "cpp"
     }
 }

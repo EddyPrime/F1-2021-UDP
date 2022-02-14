@@ -8,6 +8,8 @@
 
 #include "serial.h"
 
+#define ACM0 "/dev/ttyACM0"
+
 int serialport_init()
 {
 
@@ -81,7 +83,7 @@ int serialport_init()
     return serial_port;
 }
 
-ssize_t serialport_write(int fd, void *buf, size_t n)
+ssize_t serialport_write(int fd, uint8_t *buf, size_t n)
 {
 
     ssize_t res;
@@ -90,7 +92,7 @@ ssize_t serialport_write(int fd, void *buf, size_t n)
     {
         return -1;
     }
-    res = write(fd, buf, n);
+    res = write(fd, (uint8_t *)buf, n);
     return res;
 }
 

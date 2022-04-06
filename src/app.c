@@ -20,8 +20,12 @@
 uint8 m_playerCarIndex, drsActivated;
 
 struct PacketSessionData packetSessionData;
-uint8 curr_m_sessionType, prev_m_sessionType;
-uint8 curr_m_weather;
+uint8 curr_m_sessionType, prev_m_sessionType, curr_m_weather;
+uint16 m_sessionDuration;
+
+struct PacketLapData packetLapData;
+uint32 m_lastLapTimeInMS, m_currentLapTimeInMS, bestLap = UINT32_MAX;
+uint8 m_currentLapNum;
 
 struct PacketEventData packetEventData;
 uint8 drsEnabled, chequeredFlag;
@@ -30,6 +34,10 @@ uint32 m_buttonStatus;
 struct PacketCarStatusData packetCarStatusData;
 uint8 curr_m_drsAllowed, prev_m_drsAllowed;
 int8 curr_m_vehicleFiaFlags, prev_m_vehicleFiaFlags;
+
+struct PacketCarTelemetryData packetCarTelemetryData;
+uint16 m_speed, m_engineRPM;
+int8 m_gear;
 
 char *color;
 
@@ -95,6 +103,7 @@ int main()
             packetSessionData = *((struct PacketSessionData *)&buf);
             curr_m_sessionType = packetSessionData.m_sessionType;
             curr_m_weather = packetSessionData.m_weather;
+            m_sessionDuration = packetSessionData.m_sessionDuration;
 
             if (curr_m_sessionType != prev_m_sessionType)
             {
@@ -115,6 +124,14 @@ int main()
             break;
         case LAP_DATA:
             // printf("LAP_DATA packet\n");
+            packetLapData = *((struct PacketLapData *)&buf);
+            m_lastLapTimeInMS = packetLapData.m_lapData[m_playerCarIndex].m_lastLapTimeInMS;
+            m_currentLapTimeInMS = packetLapData.m_lapData[m_playerCarIndex].m_currentLapTimeInMS;
+            m_currentLapNum = packetLapData.m_lapData[m_playerCarIndex].m_currentLapNum;
+
+            if (m_lastLapTimeInMS < bestLap) {
+                bestLap = m_currentLapTimeInMS;
+            }
             break;
         case EVENT:
             // printf("EVENT packet\n");
@@ -210,6 +227,10 @@ int main()
             break;
         case CAR_TELEMETRY:
             // printf("CAR_TELEMETRY packet\n");
+            packetCarTelemetryData = *((struct PacketCarTelemetryData *)&buf);
+            m_speed = packetCarTelemetryData.m_carTelemetryData[m_playerCarIndex].m_speed;
+            m_gear = packetCarTelemetryData.m_carTelemetryData[m_playerCarIndex].m_gear;
+            m_engineRPM = packetCarTelemetryData.m_carTelemetryData[m_playerCarIndex].m_engineRPM;
             break;
         case CAR_STATUS:
             // printf("CAR_STATUS packet\n");

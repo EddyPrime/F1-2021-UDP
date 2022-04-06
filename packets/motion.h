@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define CAR_MOTION_DATA_SIZE sizeof(struct CarMotionData)
+#define PACKET_MOTION_DATA_SIZE sizeof(struct PacketMotionData)
+
 struct CarMotionData
 {
     float m_worldPositionX;     // World space X position

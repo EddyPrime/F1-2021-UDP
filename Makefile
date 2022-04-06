@@ -1,11 +1,14 @@
 CC=gcc
-CFLAGS= -g -O2 -Wall
+CFLAGS= -g -O2
 
 TARGET=app
 TARGET_DIR=src
 
 all:
 	$(CC) $(CFLAGS) $(TARGET_DIR)/$(TARGET).c -o $(TARGET)
+
+allDebug:
+	$(CC) $(CFLAGS) -Wall $(TARGET_DIR)/$(TARGET).c -o $(TARGET)
 
 windows:
 	i686-w64-mingw32-gcc $(CFLAGS) $(TARGET_DIR)/$(TARGET).c -o app.exe

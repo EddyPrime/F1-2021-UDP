@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define CAR_DAMAGE_DATA_SIZE sizeof(struct CarDamageData)
+#define PACKET_CAR_DAMAGE_DATA_SIZE sizeof(struct PacketCarDamageData)
+
 struct CarDamageData
 {
     float m_tyresWear[4];         // Tyre wear (percentage)

@@ -1,5 +1,9 @@
 #include "header.h"
 
+#define LAP_HISTORY_DATA_SIZE sizeof(struct LapHistoryData)
+#define TYRE_STINT_HISTORY_DATA_SIZE sizeof(struct TyreStintHistoryData)
+#define PACKET_SESSION_HISTORY_DATA_SIZE sizeof(struct PacketSessionHistoryData)
+
 struct LapHistoryData
 {
     uint32 m_lapTimeInMS;     // Lap time in milliseconds

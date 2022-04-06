@@ -1,5 +1,7 @@
 #include "header.h"
 
+#define CAR_STATUS_DATA_SIZE sizeof(struct CarStatusData)
+#define PACKET_CAR_STATUS_DATA_SIZE sizeof(struct PacketCarStatusData)
 struct CarStatusData
 {
     uint8 m_tractionControl;         // Traction control - 0 = off, 1 = medium, 2 = full

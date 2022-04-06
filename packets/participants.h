@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define PARTICIPANT_DATA_SIZE sizeof(struct ParticipantData)
+#define PACKET_PARTICIPANTS_DATA_SIZE sizeof(struct PacketParticipantsData)
+
 struct ParticipantData
 {
     uint8 m_aiControlled;  // Whether the vehicle is AI (1) or Human (0) controlled

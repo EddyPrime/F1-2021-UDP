@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+#define PACKET_HEADER_SIZE sizeof(struct PacketHeader)
+
 typedef int8_t int8;
 typedef int16_t int16;
 

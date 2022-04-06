@@ -1,5 +1,7 @@
 #include "header.h"
 
+#define CAR_SETUP_DATA_SIZE sizeof(struct CarSetupData)
+#define PACKET_CAR_SETUP_DATA_SIZE sizeof(struct PacketCarSetupData)
 struct CarSetupData
 {
     uint8 m_frontWing;              // Front wing aero

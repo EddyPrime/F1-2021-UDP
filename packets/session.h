@@ -1,5 +1,9 @@
 #include "header.h"
 
+#define MARSHAL_ZONE_SIZE sizeof(struct MarshalZone)
+#define WEATHER_FORECAST_SAMPLE_SIZE sizeof(struct WeatherForecastSample)
+#define PACKET_SESSION_DATA_SIZE sizeof(struct PacketSessionData)
+
 struct MarshalZone
 {
     float m_zoneStart; // Fraction (0..1) of way through the lap the marshal zone starts

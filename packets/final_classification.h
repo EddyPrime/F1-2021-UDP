@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define FINAL_CLASSIFICATION_DATA_SIZE sizeof(struct FinalClassificationData)
+#define PACKET_FINAL_CLASSIFICATION_DATA_SIZE sizeof(struct PacketFinalClassificationData)
+
 struct FinalClassificationData
 {
     uint8 m_position;            // Finishing position
@@ -18,6 +21,7 @@ struct FinalClassificationData
     uint8 m_tyreStintsActual[8]; // Actual tyres used by this driver
     uint8 m_tyreStintsVisual[8]; // Visual tyres used by this driver
 } __attribute__((packed));
+
 struct PacketFinalClassificationData
 {
     struct PacketHeader m_header; // Header

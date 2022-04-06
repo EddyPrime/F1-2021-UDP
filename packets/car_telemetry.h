@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define CAR_TELEMETRY_DATA_SIZE sizeof(struct CarTelemetryData)
+#define PACKET_CAR_TELEMETRY_DATA_SIZE sizeof(struct PacketCarTelemetryData)
+
 struct CarTelemetryData
 {
     uint16 m_speed;                     // Speed of car in kilometres per hour

@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define LOBBY_INFO_DATA_SIZE sizeof(struct LobbyInfoData)
+#define PACKET_LOBBY_INFO_DATA_SIZE sizeof(struct PacketLobbyInfoData)
+
 struct LobbyInfoData
 {
     uint8 m_aiControlled; // Whether the vehicle is AI (1) or Human (0) controlled

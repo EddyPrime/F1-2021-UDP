@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define EVENT_DATA_DETAILS_SIZE sizeof(union EventDataDetails)
+#define PACKET_EVENT_DATA_SIZE sizeof(struct PacketEventData)
+
 // The event details packet is different for each type of event.
 // Make sure only the correct type is interpreted.
 union EventDataDetails

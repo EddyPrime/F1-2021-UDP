@@ -1,5 +1,8 @@
 #include "header.h"
 
+#define LAP_DATA_SIZE sizeof(struct LapData)
+#define PACKET_LAP_DATA_SIZE sizeof(struct PacketLapData)
+
 struct LapData
 {
     uint32 m_lastLapTimeInMS;            // Last lap time in milliseconds

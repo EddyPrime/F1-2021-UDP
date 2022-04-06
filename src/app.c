@@ -73,10 +73,8 @@ int main()
 
     printf("server waiting on port %d\n", PORT);
     fflush(stdout);
-
     while (1)
     {
-
         res = recvfrom(sock, &buf, PACKET_MAX_SIZE, 0,
                        (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
         res = res; // FOR COMPILER HAPPINESS
@@ -122,7 +120,7 @@ int main()
             // printf("EVENT packet\n");
             packetEventData = *((struct PacketEventData *)&buf);
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, SESSION_STARTED))
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)SESSION_STARTED))
             {
                 printf("SESSION STARTED\n");
             init:
@@ -135,14 +133,21 @@ int main()
                 break;
             }
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_ENABLED))
+            //TO BE TESTED
+            if (0 && evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)SESSION_ENDED))
+            {
+                printf("SESSION ENDED\n");
+                goto init;
+            }
+
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)DRS_ENABLED))
             {
                 printf("DRS ENABLED\n");
                 drsEnabled = 1;
                 break;
             }
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, DRS_DISABLED))
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)DRS_DISABLED))
             {
                 printf("DRS DISABLED\n");
                 drsEnabled = 0;
@@ -150,14 +155,14 @@ int main()
                 break;
             }
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, CHEQUERED_FLAG))
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)CHEQUERED_FLAG))
             {
                 printf("CHEQUERED FLAG\n");
                 chequeredFlag = 1;
                 break;
             }
 
-            if (evenStringCodeCmp(packetEventData.m_eventStringCode, BUTTON_STATUS))
+            if (evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)BUTTON_STATUS))
             {
                 // printf("BUTTON STATUS\n");
                 m_buttonStatus = packetEventData.m_eventDetails.Buttons.m_buttonStatus;

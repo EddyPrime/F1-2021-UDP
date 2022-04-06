@@ -8,6 +8,11 @@
         "car_telemetry.h": "c",
         "types.h": "c",
         "_button_flags.h": "c",
+<<<<<<< HEAD
         "header.h": "c"
+=======
+        "SKJFDSJK.C": "cpp",
+        "car_setup.h": "c"
+>>>>>>> 22cc4890e20b5aa54fc0a44e8108ddc82622f925
     }
 }

@@ -13,14 +13,8 @@ AVR=avr
 all:
 	$(CC) $(CFLAGS) $(TARGET).c -o $(TARGET)
 
-allDebug:
-	$(CC) $(CFLAGS) -Wall $(TARGET).c -o $(TARGET)
-
-windows:
-	i686-w64-mingw32-gcc $(CFLAGS) $(TARGET).c -o app.exe
-
-windows64:
-	x86_64-w64-mingw32-gcc $(CFLAGS) $(TARGET).c -o app.exe
+debug: CFLAGS += -Wall
+debug: all
 
 clean:
 	$(RM) $(TARGET)

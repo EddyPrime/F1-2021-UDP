@@ -4,8 +4,6 @@ CFLAGS= -g -O2
 TARGET=app
 dSYM = $(TARGET).dSYM
 
-AVR=avr
-
 .PHONY: clean all windows windows64
 
 .SILENT: clean

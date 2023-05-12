@@ -28,6 +28,6 @@ struct CarDamageData
 struct PacketCarDamageData
 {
     struct PacketHeader m_header; // Header
-    
+
     struct CarDamageData m_carDamageData[22];
 } __attribute__((packed));

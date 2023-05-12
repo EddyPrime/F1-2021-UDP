@@ -23,11 +23,10 @@ struct CarTelemetryData
     uint8 m_surfaceType[4];             // Driving surface, see appendices
 } __attribute__((packed));
 
-
 struct PacketCarTelemetryData
 {
     struct PacketHeader m_header; // Header
-    
+
     struct CarTelemetryData m_carTelemetryData[22];
 
     uint8 m_mfdPanelIndex;                // Index of MFD panel open - 255 = MFD closed

@@ -28,10 +28,9 @@ struct CarSetupData
     float m_fuelLoad;               // Fuel load
 } __attribute__((packed));
 
-
 struct PacketCarSetupData
 {
     struct PacketHeader m_header; // Header
-    
+
     struct CarSetupData m_carSetups[22];
 } __attribute__((packed));

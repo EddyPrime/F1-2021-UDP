@@ -6,13 +6,15 @@
 #define millisToSecs(millis) millis / 1000
 #define secsToMillis(secs) secs * 1000
 
-struct lap_time {
+struct lap_time
+{
     uint8_t mins;
     uint8_t secs;
     uint16_t millis;
 } __attribute__((packed));
 
-struct lap_time millisToMinSecMillis(uint32_t millis) {
+struct lap_time millisToMinSecMillis(uint32_t millis)
+{
     struct lap_time lt;
 
     lt.mins = millisToMins(millis);

@@ -17,6 +17,15 @@
 
 #endif
 
+/* TODO
+
+add allDebug rule to super makefile
+drs when flag is yellow or red
+yellow flag for each subsector
+speed and gears over distance plotting
+
+*/
+
 uint8 m_playerCarIndex, drsActivated;
 
 struct PacketSessionData packetSessionData;
@@ -36,24 +45,24 @@ uint8 curr_m_drsAllowed, prev_m_drsAllowed;
 int8 curr_m_vehicleFiaFlags, prev_m_vehicleFiaFlags;
 
 struct PacketCarTelemetryData packetCarTelemetryData;
-uint16 m_speed, m_engineRPM;
+uint16 m_speed;
 int8 m_gear;
 
 char *color;
 
-uint8 evenStringCodeCmp(uint8 *c1, uint8 *c2)
+uint8 evenStringCodeCmp(uint8 *code1, uint8 *code2)
 {
-    uint8 res = c1[0] == c2[0];
-    res &= c1[1] == c2[1];
-    res &= c1[2] == c2[2];
-    return res && (c1[3] == c2[3]);
+    uint8 res = code1[0] == code2[0];
+    res &= code1[1] == code2[1];
+    res &= code1[2] == code2[2];
+    return res && (code1[3] == code2[3]);
 }
 
 int main()
 {
     int sock;
     size_t addr_len;
-    ssize_t res;
+    // ssize_t res;
     struct sockaddr_in server_addr, client_addr;
 
     char buf[PACKET_MAX_SIZE];
@@ -83,9 +92,13 @@ int main()
     fflush(stdout);
     while (1)
     {
+        /*
         res = recvfrom(sock, &buf, PACKET_MAX_SIZE, 0,
                        (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
-        res = res; // FOR COMPILER HAPPINESS
+        */
+
+        recvfrom(sock, &buf, PACKET_MAX_SIZE, 0,
+                 (struct sockaddr *)&client_addr, (socklen_t *)&addr_len);
 
         // printf("\n(%s , %d) said : ", inet_ntoa(client_addr.sin_addr),
         //        ntohs(client_addr.sin_port));
@@ -129,7 +142,8 @@ int main()
             m_currentLapTimeInMS = packetLapData.m_lapData[m_playerCarIndex].m_currentLapTimeInMS;
             m_currentLapNum = packetLapData.m_lapData[m_playerCarIndex].m_currentLapNum;
 
-            if (m_lastLapTimeInMS < bestLap) {
+            if (m_lastLapTimeInMS < bestLap)
+            {
                 bestLap = m_currentLapTimeInMS;
             }
             break;
@@ -150,7 +164,7 @@ int main()
                 break;
             }
 
-            //TO BE TESTED
+            // TO BE TESTED
             if (0 && evenStringCodeCmp(packetEventData.m_eventStringCode, (uint8 *)SESSION_ENDED))
             {
                 printf("SESSION ENDED\n");
@@ -230,7 +244,6 @@ int main()
             packetCarTelemetryData = *((struct PacketCarTelemetryData *)&buf);
             m_speed = packetCarTelemetryData.m_carTelemetryData[m_playerCarIndex].m_speed;
             m_gear = packetCarTelemetryData.m_carTelemetryData[m_playerCarIndex].m_gear;
-            m_engineRPM = packetCarTelemetryData.m_carTelemetryData[m_playerCarIndex].m_engineRPM;
             break;
         case CAR_STATUS:
             // printf("CAR_STATUS packet\n");
